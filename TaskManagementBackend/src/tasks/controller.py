@@ -2,7 +2,7 @@ from src.tasks.dtos import TaskSchema
 from sqlalchemy.orm import Session
 from src.tasks.models import TaskModel
 
-
+##!POST
 def create_task(body:TaskSchema , db:Session):
     
     #print(body.model_dump())
@@ -24,3 +24,13 @@ def create_task(body:TaskSchema , db:Session):
         "data": new_task
     }
 
+
+##! GET endpoint
+
+def get_tasks(db:Session):
+    tasks = db.query(TaskModel).all()
+    return {
+        "status": 200,
+        "msg" : "Task Retreived Successfully",
+        "data": tasks
+    }
