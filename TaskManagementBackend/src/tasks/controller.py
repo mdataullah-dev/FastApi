@@ -88,10 +88,18 @@ def delete_task(task_id:int, db:Session):
     db.delete(one_task)
     db.commit()
     
-    return{
-        "status": 200,
-        "msg" : "Task Deleted Successfully",
-        "data": task_id
-    }
+    # return{
+    #     "status": 200,
+    #     "msg" : "Task Deleted Successfully",
+    #     "data": task_id
+    # }
+    #? delete ka controller kuch v return nhi krta :
+    return None
     
+#? for get we use 200
+#? for post and put we use 201
+#? for delete we return None from controller
+#? 204 for no content  => for delete we use this => use in router
 
+#* in router for all these endpoint fastapi provides status that is being used in router.py
+#? hamesha hum apne router mein dete hain status code
