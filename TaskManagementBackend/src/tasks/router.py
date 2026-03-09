@@ -5,6 +5,8 @@ from src.utils.db import get_db
 
 
 task_routes = APIRouter(prefix="/tasks")
+
+
 #?post
 @task_routes.post("/create")
 def create_task(body:TaskSchema, db = Depends(get_db) ):
@@ -16,7 +18,25 @@ def create_task(body:TaskSchema, db = Depends(get_db) ):
 #? coz => database provide kr raha hai hume ye get_db
 
 
-#?get
+#?get   => fetch all records from database
 @task_routes.get("/all_tasks")
 def get_all_tasks(db = Depends(get_db)):
     return controller.get_tasks(db)
+
+
+#?get => fetch only a specifc records from a database
+@task_routes.get("/one_task/{task_id}")
+def get_one_Task(task_id:int , db = Depends(get_db) ):
+    return controller.get_oneTask(task_id, db)
+
+
+#?update => means updating some details for a specific id using put
+@task_routes.put("/update_task/{task_id}")
+def update_task(body:TaskSchema, task_id:int , db = Depends(get_db)):
+    return controller.update_task(body , task_id , db)
+
+
+#?delete => means deleting whole id:
+@task_routes.delete("/delete/{task_id}")
+def delete(task_id:int, db = Depends(get_db)):
+    return controller.delete_task(task_id , db)
