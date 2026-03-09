@@ -19,11 +19,12 @@ def create_task(body:TaskSchema , db:Session):
     db.commit()
     db.refresh(new_task)
     
-    return {
-        "status": 200,
-        "msg" : "Task Created Successfully",
-        "data": new_task
-    }
+    # return {
+    #     "status": 200,
+    #     "msg" : "Task Created Successfully",
+    #     "data": new_task
+    # }
+    return new_task
 
 
 ##! GET endpoint
@@ -31,11 +32,12 @@ def create_task(body:TaskSchema , db:Session):
 #?get   => fetch all records from database
 def get_tasks(db:Session):
     tasks = db.query(TaskModel).all()
-    return {
-        "status": 200,
-        "msg" : "Task Retreived Successfully",
-        "data": tasks
-    }
+    # return {
+    #     "status": 200,
+    #     "msg" : "Task Retreived Successfully",
+    #     "data": tasks
+    # }
+    return tasks
     
     
 #?get => fetch only a specifc records from a database
@@ -44,11 +46,8 @@ def get_oneTask(task_id:int, db:Session):
     one_task = db.query(TaskModel).get(task_id)
     if not one_task:
         raise HTTPException(404, detail="Task Id not found")
-    return {
-        "status": 200,
-        "msg" : "Task Retreived Successfully",
-        "data": one_task
-    }
+    # 
+    return one_task
     
     
 #?update => already created task ko update kaise krna hai 
@@ -71,11 +70,8 @@ def update_task(body:TaskSchema, task_id:int , db:Session):
     db.commit()
     db.refresh(one_task)
     
-    return{
-        "status": 200,
-        "msg" : "Task Updated Successfully",
-        "data": one_task
-    }
+    # 
+    return one_task
 
 
 #? delete => delete the task from database
