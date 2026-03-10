@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends , status
 from src.user import controller
-from src.user.dtos import userInputSchema
+from src.user.dtos import userInputSchema , UserResponseSchema
 from src.utils.db import get_db
 from typing import List
 from sqlalchemy.orm import Session
@@ -19,6 +19,6 @@ user_routes = APIRouter(prefix="/user")
 '''
 || POST ||
 '''
-@user_routes.post("/register" , status_code=status.HTTP_201_CREATED)
+@user_routes.post("/register",response_model= UserResponseSchema ,status_code=status.HTTP_201_CREATED)
 def userRegister(body:userInputSchema , db:Session = Depends(get_db)):
     return controller.registerUser(body , db )

@@ -12,8 +12,12 @@ class userInputSchema(BaseModel):
     email : str
     
     
-
-#class UserResponseSchema(BaseModel):
+#* RESPONSE Schema hanta kr run kro hashpassword ayega in our postman if call register api
+class UserResponseSchema(BaseModel):   #?hash password hum show nhi karengein in response 
+    name : str 
+    username : str
+    email : str
+    id : int 
 
 
 
