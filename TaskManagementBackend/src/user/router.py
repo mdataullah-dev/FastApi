@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends , status
+from fastapi import APIRouter, Depends , status , Request
 from src.user import controller
 from src.user.dtos import userInputSchema , UserResponseSchema , loginSchema
 from src.utils.db import get_db
@@ -29,4 +29,28 @@ def userRegister(body:userInputSchema , db:Session = Depends(get_db)):
 @user_routes.post("/login", status_code=status.HTTP_200_OK)   #? yahan pr 200 hi rakha kyu ki database mein kuch create nhi kr rahein hain hum 
 def login(body:loginSchema , db:Session = Depends(get_db)):
     return controller.login_user(body , db)
+
+'''
+|| GET : IS_AUTHENTICATED ||
+'''
+@user_routes.get("/is_auth" ,response_model=UserResponseSchema , status_code=status.HTTP_200_OK)
+def is_auth(request:Request , db:Session = Depends(get_db)):
+    return controller.is_authenticated(request , db )
+
+
+'''
+|| GET : ALL USERS DETAILS ||
+'''
+@user_routes.get("/all_users", response_model=List[UserResponseSchema], status_code= status.HTTP_200_OK)
+def get_all_users(db:Session = Depends(get_db)):
+    return controller.get_users(db)
+
+
+'''
+|| DELETE : DELETE A SINGLE USER FROM DATABASE || 
+'''
+@user_routes.delete("/delete/{user_id}" ,response_model=None, status_code= status.HTTP_204_NO_CONTENT)
+def delete(user_id:int, db:Session = Depends(get_db)):
+    return controller.delete_user(user_id , db)
+
 

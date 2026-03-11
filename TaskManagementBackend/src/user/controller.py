@@ -1,11 +1,12 @@
 from src.user.dtos import userInputSchema , loginSchema
 from sqlalchemy.orm import Session
 from src.user.models import UserModel
-from fastapi import HTTPException , status
+from fastapi import HTTPException , status , Request
 from pwdlib import PasswordHash # type: ignore
 import jwt # type: ignore
 from src.utils.settings import settings
 from datetime import datetime , timedelta
+from jwt import ExpiredSignatureError, InvalidTokenError
 
 
 '''
@@ -89,10 +90,11 @@ def login_user(body:loginSchema , db:Session):
  
     #? if dono uper wali condition false ho gyi then user sahi hai then we will generate token 
     
-    exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME) # current time mein + 30 minutes uske baad expire ho jayega 
+    #exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME) # current time mein + 30 minutes uske baad expire ho jayega 
+    exp_time = datetime.now() + timedelta(seconds=40)
     
-    token = jwt.encode({"_id":user.id , "exp":exp_time} , settings.SECRET_KEY , settings.ALGORITHM)
-    print(exp_time)
+    token = jwt.encode({"_id":user.id , "exp":exp_time.timestamp()} , settings.SECRET_KEY , settings.ALGORITHM)
+    #print(exp_time)
     
     
     '''
@@ -111,3 +113,102 @@ def login_user(body:loginSchema , db:Session):
     return {
         "token" : token   #? token bhejna cumpulsory hai 
     }
+    
+    
+    
+'''
+#! BASED on the token : [[how to authenticate the user]]
+
+till now : we learn user login : if user put correct username and password then hum means backend usko validate kr ke ek correct token generate kr ke dengein
+
+but today : based on that token => jo user ne during login generate kiya hai -> hum user ko authenticate kaise kr skte hain? ki vo kis user ka token? and and uski kya details hain?
+
+#? steps to validate the token:
+
+   1. jab v koi user api call karega sath mein token send karega --> in request body mein send karega => headers ki form mein bhejegein ye token (user bhejega)
+   2. is [header] ko apne backend mein read / nikalengein kaise
+   3. then is [header] ko validate kr lengein
+   4. then data ko fetch kr ke 
+   5. then user ko return mein response bhej dengein
+   
+'''
+def is_authenticated(request:Request , db:Session):
+    # request har endpoint ke sath attach hoti just mujhe usse nikalna aana chaiye
+    
+    #print(request.headers)  #? request ek object hai 
+    '''
+    Headers({
+        'authorization': 'jwt eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjMsImV4cCI6MTc3MzIzNzYzNn0.AdXAz9a1sll1fl2FCIxNP54DHifQQ7LpsPriwYN0Zoo',
+        'content-type': 'text/plain',
+        'user-agent': 'PostmanRuntime/7.52.0',
+        'accept': '*/*',
+        'postman-token': '881d656d-8392-4e54-b0f2-9a59e2837040',
+        'host': '127.0.0.1:8000',
+        'accept-encoding': 'gzip, deflate, br',
+        'connection': 'keep-alive', 'content-length': '10'
+    })
+    
+    headers ek dict hai uske ander ke key hai authorization
+    '''
+    try:
+        token = request.headers.get("authorization")
+        if not token:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="no Token")
+        #print(token) 
+        token = token.split(" ")[-1]
+        
+        data = jwt.decode(token , settings.SECRET_KEY , settings.ALGORITHM)
+        
+        #print(data)   #? {'_id': 3, 'exp': 1773239661} => jis user ne login kiya tha uski id mil rahi 
+        
+        user_id = data.get("_id")
+        # expiry_time = int(data.get("exp"))
+        # #print(expiry_time)
+        
+        # current_time = datetime.now().timestamp()
+        # #print(current_time)
+        
+        # print(expiry_time - current_time)
+        # if current_time > expiry_time:
+        #     raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED , detail="TimeOut || you are unauthorized") 
+        
+        user = db.query(UserModel).filter(UserModel.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED , detail="User doesn't exist || you are unauthorized")
+        
+        # return {
+        #     "msg" : "Done"
+        # }
+        return user    #? user ki details ajayegi sari aise return krne se
+    
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+       
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+'''
+|| GET : ALL USERS DETAILS ||
+'''
+def get_users(db:Session):
+    users = db.query(UserModel).all()
+    return users
+
+#----------------------------------------------------------------------------------------------
+
+'''
+|| DELETE : DELETE A SINGLE USER FROM DATABASE ||
+'''
+def delete_user(user_id:int, db:Session):
+    one_user = db.query(UserModel).get(user_id)
+    if not one_user:
+        raise HTTPException(404, detail="Task Id not found")
+    
+    db.delete(one_user)
+    db.commit()
+    return None
+
+#--------------------------------------------------------------------------------------------------------
