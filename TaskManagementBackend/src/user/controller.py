@@ -91,7 +91,7 @@ def login_user(body:loginSchema , db:Session):
     #? if dono uper wali condition false ho gyi then user sahi hai then we will generate token 
     
     #exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME) # current time mein + 30 minutes uske baad expire ho jayega 
-    exp_time = datetime.now() + timedelta(seconds=40)
+    exp_time = datetime.now() + timedelta(seconds=55)
     
     token = jwt.encode({"_id":user.id , "exp":exp_time.timestamp()} , settings.SECRET_KEY , settings.ALGORITHM)
     #print(exp_time)
@@ -175,7 +175,8 @@ def is_authenticated(request:Request , db:Session):
         user = db.query(UserModel).filter(UserModel.id == user_id).first()
         if not user:
             raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED , detail="User doesn't exist || you are unauthorized")
-        
+ 
+        #? ye user wala tab run hoga jab => database mein alreay register tha id:4 ya koi v id => id:4 ne login mara => then id:4 database se delete kr diya humne => then id:4 ke liye jo login ke time token mila tha usko header mein daal kr authentication krne gye and => then hame milega ye wala user wala exception
         # return {
         #     "msg" : "Done"
         # }
