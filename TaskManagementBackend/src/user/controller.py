@@ -90,8 +90,8 @@ def login_user(body:loginSchema , db:Session):
  
     #? if dono uper wali condition false ho gyi then user sahi hai then we will generate token 
     
-    #exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME) # current time mein + 30 minutes uske baad expire ho jayega 
-    exp_time = datetime.now() + timedelta(seconds=55)
+    exp_time = datetime.now() + timedelta(minutes=settings.EXP_TIME) # current time mein + 30 minutes uske baad expire ho jayega 
+    #exp_time = datetime.now() + timedelta(seconds=55)   #? uncomment this and comment above for testing is_authenticated in less time
     
     token = jwt.encode({"_id":user.id , "exp":exp_time.timestamp()} , settings.SECRET_KEY , settings.ALGORITHM)
     #print(exp_time)
@@ -114,10 +114,10 @@ def login_user(body:loginSchema , db:Session):
         "token" : token   #? token bhejna cumpulsory hai 
     }
     
-    
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
     
 '''
-#! BASED on the token : [[how to authenticate the user]]
+#! BASED ON THE TOKEN : [[HOW TO AUTHENTICATE THE USER]]
 
 till now : we learn user login : if user put correct username and password then hum means backend usko validate kr ke ek correct token generate kr ke dengein
 
@@ -213,3 +213,26 @@ def delete_user(user_id:int, db:Session):
     return None
 
 #--------------------------------------------------------------------------------------------------------
+
+'''
+|| HOW TO PROTECT ROUTES ||
+#! Jab tal koi user authenticated na h0  |  ya jab koi user account ko login na kiya ho | then vo [user] na toh [task] ko update kr sake , task create kr ske , task delete kr ske , task read kr ske
+
+in router.py:
+
+- hum kisi v route mein dependency pass kr skte hain
+  => like [get_db function]  agar humari dependency ko satisfy nhi karegi toh hamara route kaam nhi karega => like return statement nhi chalega and humara controller call nhi hoga 
+
+
+we can make our own dependency: jis dependency ka itna sa kaam hoga ?
+-> ki validate krna ki us particular route ko call krte time kya humne header mein authorization token pass kiya hai ya nhi kiya hai 
+-> if kiya hai then token ? true : false 
+
+-> humne jo uper [is_authenticated]controller mein kiya hai => usi controller ko convert kr dena hai dependency function mein 
+-> then us dependency funtion ko  AS a DEPENDENCY INJECTION pass kr sakein 
+-> and jab ye success ho jayega => then only hamara route work krna chaiye 
+
+steps : copy {is_authenticated} controller and => paste it inside ./utils/helpers.py => see helpers.py for more steps
+'''
+
+
