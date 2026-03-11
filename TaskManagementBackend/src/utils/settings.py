@@ -4,6 +4,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".venv", extra="ignore")
     
     DB_CONNECTION:str
+    SECRET_KEY : str
+    ALGORITHM : str
+    EXP_TIME : int
     
     
 settings = Settings()   #? settings naam ki object bn gyi hai ==> jisme Settings class ki sari properties hain 

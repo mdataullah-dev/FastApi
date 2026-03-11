@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends , status
 from src.user import controller
-from src.user.dtos import userInputSchema , UserResponseSchema
+from src.user.dtos import userInputSchema , UserResponseSchema , loginSchema
 from src.utils.db import get_db
 from typing import List
 from sqlalchemy.orm import Session
@@ -17,8 +17,16 @@ user_routes = APIRouter(prefix="/user")
 
 
 '''
-|| POST ||
+|| POST : REGISTRATION ||
 '''
 @user_routes.post("/register",response_model= UserResponseSchema ,status_code=status.HTTP_201_CREATED)
 def userRegister(body:userInputSchema , db:Session = Depends(get_db)):
     return controller.registerUser(body , db )
+
+'''
+|| POST : LOGIN ||
+'''
+@user_routes.post("/login", status_code=status.HTTP_200_OK)   #? yahan pr 200 hi rakha kyu ki database mein kuch create nhi kr rahein hain hum 
+def login(body:loginSchema , db:Session = Depends(get_db)):
+    return controller.login_user(body , db)
+

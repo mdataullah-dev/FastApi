@@ -19,9 +19,10 @@ class UserResponseSchema(BaseModel):   #?hash password hum show nhi karengein in
     email : str
     id : int 
 
-
-
 #? next step 3 => controller defined krna hai 
     
-     
-    
+   
+#* for ||login|| defining body type   
+class loginSchema(BaseModel):
+    username : str
+    password : str 
