@@ -67,6 +67,11 @@ def update_task(body:TaskSchema, task_id:int , db:Session = Depends(get_db), use
 def delete(task_id:int, db:Session = Depends(get_db), user:UserModel = Depends(is_authenticated)):
     return controller.delete_task(task_id , db)
 
+'''
+ || USER login krne ke baad => usko jo token milega => usko pass karega => sare CRUD operations perform krne ke liye in tasks API in header in postman as "authorization":"token" => then sahi hoga toh access milega ||
+ || Made a is_authenticated dependency function => which we pass as dependecny injection in all CRUD endpoints to perform => only for kogin users ||
+'''
 
 
-#? || USER login krne ke baad => usko jo token milega => usko pass karega => sare CRUD operations perform krne ke liye in tasks API in header in postman as "authorization":"token" => then sahi hoga toh access milega 
+#---------------------------------------------------------------------------------------------
+
