@@ -100,11 +100,14 @@ def update_task(body:TaskSchema, task_id:int , db:Session , user:UserModel):
 
 
 #? delete => delete the task from database
-def delete_task(task_id:int, db:Session):
+def delete_task(task_id:int, db:Session , user:UserModel):
     
-    one_task = db.query(TaskModel).get(task_id)
+    one_task:TaskModel = db.query(TaskModel).get(task_id)
     if not one_task:
         raise HTTPException(404, detail="Task Id not found")
+    
+    if one_task.user_id != user.id:          #* user.id => user ek table ka object hua means uske pass id hoga => means loged in user ki id se match krti hai ya nhi 
+        raise HTTPException(404, detail="You are unauthorized to perform deletion || task.user_id [jisne task create kiya hai] not equal to logged-in user ki id se")
     
     db.delete(one_task)
     db.commit()
