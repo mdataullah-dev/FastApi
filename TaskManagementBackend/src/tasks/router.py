@@ -19,7 +19,7 @@ task_routes = APIRouter(prefix="/tasks")
 '''
 @task_routes.post("/create" , response_model=TaskResponseSchema,  status_code=status.HTTP_201_CREATED)
 def create_task(body:TaskSchema, db:Session = Depends(get_db) , user:UserModel = Depends(is_authenticated)):     #* if is_authenticated successfully kaam krega tabhi hamara system/royte controller ko return krega => 
-    return controller.create_task(body, db)                                                                      #*  user:UserModel = Depends(is_authenticated)  => is_authenticated return karega [user] => jo is yahan wale user varaible mein store ho jayega and => is user:UserModel type UserModel isliye hai kyu ki user : userModel class ka hi ek object hai
+    return controller.create_task(body, db , user)                                                                      #*  user:UserModel = Depends(is_authenticated)  => is_authenticated return karega [user] => jo is yahan wale user varaible mein store ho jayega and => is user:UserModel type UserModel isliye hai kyu ki user : userModel class ka hi ek object hai
 
 
 '''

@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from src.tasks.models import TaskModel
 from fastapi import HTTPException
 
+from src.user.models import UserModel
+
 ##!POST
-def create_task(body:TaskSchema , db:Session):
+def create_task(body:TaskSchema , db:Session , user:UserModel):
     
     #print(body.model_dump())
     data = body.model_dump()
@@ -13,7 +15,9 @@ def create_task(body:TaskSchema , db:Session):
     new_task = TaskModel(
         title = data["title"],
         description = data["description"],
-        is_completed = data["is_completed"]
+        is_completed = data["is_completed"],
+        
+        user_id = user.id  #* added after migration setup using alembic
     )                        #? TaskModel class ki ek object bani hai jisko humne new_task mein store kr dia hai 
     
     db.add(new_task)

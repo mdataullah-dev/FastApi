@@ -12,3 +12,5 @@ class TaskResponseSchema(BaseModel):
     description : str 
     is_completed : bool 
     
+    user_id : int | None = 0  #? added after alembic migration of user_id into task table
+    
