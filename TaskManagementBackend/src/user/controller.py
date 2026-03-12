@@ -235,4 +235,9 @@ we can make our own dependency: jis dependency ka itna sa kaam hoga ?
 steps : copy {is_authenticated} controller and => paste it inside ./utils/helpers.py => see helpers.py for more steps
 '''
 
-
+def get_oneUser(user_id:int, db:Session):
+    
+    one_user:UserModel = db.query(UserModel).get(user_id)
+    if not one_user:
+        raise HTTPException(404, detail="User Id not found")
+    return one_user

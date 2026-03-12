@@ -53,4 +53,9 @@ def get_all_users(db:Session = Depends(get_db)):
 def delete(user_id:int, db:Session = Depends(get_db)):
     return controller.delete_user(user_id , db)
 
-
+'''
+|| GET || : A SINGLE USER DETAILS ||
+'''
+@user_routes.get("/one_user/{user_id}", response_model=UserResponseSchema, status_code= status.HTTP_200_OK)
+def get_one_user(user_id:int , db:Session = Depends(get_db) ):
+    return controller.get_oneUser(user_id, db)
