@@ -35,8 +35,9 @@ def create_task(body:TaskSchema , db:Session , user:UserModel):
 ##! GET endpoint
 
 #?get   => fetch all records from database
-def get_tasks(db:Session):
-    tasks = db.query(TaskModel).all()
+def get_tasks(db:Session , user:UserModel):
+    #!tasks = db.query(TaskModel).all()            #* before ye login tha ab neeche logic hai only => login user | authenticated user sirf apne task ko hi dekh paye aur kisi task ko nhi
+    tasks:TaskModel = db.query(TaskModel).filter(TaskModel.user_id == user.id).all()
     # return {
     #     "status": 200,
     #     "msg" : "Task Retreived Successfully",
