@@ -57,11 +57,30 @@ def get_oneTask(task_id:int, db:Session):
     
     
 #?update => already created task ko update kaise krna hai 
-def update_task(body:TaskSchema, task_id:int , db:Session):
+def update_task(body:TaskSchema, task_id:int , db:Session , user:UserModel):
     
-    one_task = db.query(TaskModel).get(task_id)
+    one_task:TaskModel = db.query(TaskModel).get(task_id)
     if not one_task:
         raise HTTPException(404, detail="Task Id not found")
+    
+    ##? authorization applying below :   here , [one_task = one row of TASKs TABLE which contains user_id named column]
+    
+    if one_task.user_id != user.id:          #* user.id => user ek table ka object hua means uske pass id hoga => means loged in user ki id se match krti hai ya nhi 
+        raise HTTPException(404, detail="You are unauthorized to perform updation || task.user_id [jisne task create kiya hai] not equal to logged-in user ki id se")
+    
+    '''
+    samjho uper kya hua =>
+    task ki koi id hogi jo hum frontend se | ya api se pass krengein 
+    vo task thik hai exist krta hai no problem lekin 
+    then vo jo task hai uske user ki id v jogi kuch 
+    then kya ???
+    vo task ke user ki id i.e [user_id]  match krti hai logged-in user ki id se 
+    means jab hum header mein dengein token login user ka 
+    maan lo {julekha} = {user.id=6} hai iski iska login token diya humne 
+    and task update krna chahte the uski task_id thi 10 | toh kya is task_id 10 ke pass user_id = 6 hai kya 6 ne hi isko create kiya hai 
+    if YES , hum krne dengein
+    if No , error dengein
+    '''
     
     # one_task.title = body.title
     # one_task.description = body.description

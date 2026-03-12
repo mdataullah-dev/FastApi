@@ -58,7 +58,7 @@ def get_one_Task(task_id:int , db:Session = Depends(get_db), user:UserModel = De
 '''
 @task_routes.put("/update_task/{task_id}", response_model=TaskResponseSchema, status_code= status.HTTP_201_CREATED)
 def update_task(body:TaskSchema, task_id:int , db:Session = Depends(get_db), user:UserModel = Depends(is_authenticated)):
-    return controller.update_task(body , task_id , db)
+    return controller.update_task(body , task_id , db , user)
 
 '''
 || DELETE || : means deleting whole id ||
